@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SUBSENSE | Real-Time Site Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#172346; --muted:#74809e; --paper:#fff; --bg:#f5f7ff; --line:#e7eaf4; --purple:#6259e8; --blue:#359cff; --pink:#f55b9b; --orange:#f49b43; --green:#16b787; --red:#ec586a; --shadow:0 16px 45px rgba(55,66,120,.11); }
+    * { box-sizing:border-box; } html { min-width:320px; } body { min-height:100vh; margin:0; color:var(--ink); font-family:"DM Sans",system-ui,sans-serif; background:radial-gradient(circle at 100% 0,rgba(85,156,255,.16),transparent 27rem),radial-gradient(circle at 0 100%,rgba(245,91,155,.10),transparent 29rem),var(--bg); }
+    button,input,select { font:inherit; } button { cursor:pointer; } .app { display:grid; grid-template-columns:240px 1fr; max-width:1480px; min-height:100vh; margin:auto; }
+    .sidebar { position:sticky; top:0; height:100vh; padding:28px 18px; color:#e9ecff; background:linear-gradient(160deg,#212d58 0%,#27205d 48%,#122948 100%); }.brand { display:flex; align-items:center; gap:10px; padding:0 9px 34px; }.brand-mark { width:32px; height:32px; display:grid; place-items:center; border-radius:10px; color:#fff; background:linear-gradient(135deg,#fb73ba,#856cff 53%,#43bbff); box-shadow:0 8px 18px rgba(0,0,0,.22); }.brand strong,h1,h2,h3 { font-family:"Space Grotesk",sans-serif; }.brand strong { font-size:1.11rem; }.brand small { display:block; margin-top:1px; color:#aeb6e0; font-size:.64rem; letter-spacing:.12em; }.menu-label { margin:0 10px 10px; color:#aeb6e0; font-size:.67rem; font-weight:700; letter-spacing:.12em; }.nav { display:grid; gap:5px; }.nav button { display:flex; align-items:center; gap:11px; width:100%; padding:11px 12px; color:#c9d0ef; border:0; border-radius:10px; background:transparent; text-align:left; font-size:.87rem; transition:.2s; }.nav button:hover,.nav button.active { color:#fff; background:rgba(255,255,255,.13); }.nav .icon { width:19px; text-align:center; }.side-status { position:absolute; right:18px; bottom:25px; left:18px; padding:14px; border:1px solid rgba(255,255,255,.12); border-radius:13px; background:rgba(255,255,255,.08); }.side-status small { color:#aeb6e0; font-size:.65rem; }.side-status b { display:block; margin:5px 0; color:#fff; font-size:.78rem; }.dot { display:inline-block; width:8px; height:8px; margin-right:6px; border-radius:50%; background:#a8b1d9; }.dot.live { background:#4ef0c1; box-shadow:0 0 11px #4ef0c1; }.dot.warn { background:#ffc35e; box-shadow:0 0 11px #ffc35e; }.dot.bad { background:#ff7584; }
+    main { padding:26px clamp(18px,3vw,42px) 42px; overflow:hidden; }.topbar { display:flex; align-items:center; justify-content:space-between; gap:17px; margin-bottom:25px; }.breadcrumb { margin:0 0 4px; color:var(--muted); font-size:.75rem; } h1 { margin:0; font-size:clamp(1.45rem,2.6vw,2rem); letter-spacing:-.045em; }.top-actions,.inline-actions { display:flex; align-items:center; flex-wrap:wrap; gap:9px; }.gateway-badge,.btn,.btn-primary { border:0; border-radius:10px; font-size:.76rem; font-weight:700; }.gateway-badge { padding:10px 12px; color:#5e6482; background:#fff; box-shadow:0 3px 12px rgba(34,46,86,.07); }.btn { padding:9px 12px; color:var(--ink); background:#fff; box-shadow:0 3px 12px rgba(34,46,86,.07); }.btn:hover { background:#efefff; }.btn-primary { padding:10px 14px; color:#fff; background:linear-gradient(120deg,var(--purple),#8a58ed); box-shadow:0 8px 18px rgba(98,89,232,.25); }.btn-primary:hover { transform:translateY(-1px); }.btn-danger { color:#c33d54; background:#ffe8ed; box-shadow:none; }
+    .tabs { display:inline-flex; gap:3px; padding:4px; margin-bottom:20px; border-radius:12px; background:#e9eaf6; }.tabs button { padding:8px 13px; color:var(--muted); border:0; border-radius:8px; background:transparent; font-size:.75rem; font-weight:700; }.tabs button.active { color:var(--purple); background:#fff; box-shadow:0 3px 9px rgba(46,55,101,.12); }.hidden { display:none!important; }.card { border:1px solid rgba(255,255,255,.9); border-radius:17px; background:rgba(255,255,255,.96); box-shadow:var(--shadow); }.card-title { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:15px; }.card h2,.card h3 { margin:0; font-size:.96rem; letter-spacing:-.02em; }.subtle { margin:3px 0 0; color:var(--muted); font-size:.69rem; }.hero { display:grid; grid-template-columns:minmax(0,1.42fr) minmax(265px,.78fr); gap:18px; margin-bottom:18px; }.hero-main { position:relative; min-height:180px; overflow:hidden; padding:25px; color:#fff; border-radius:19px; background:linear-gradient(115deg,#463bb5 0%,#6557e9 55%,#499eea 110%); box-shadow:0 17px 35px rgba(88,76,214,.27); }.hero-main::before { position:absolute; top:-145px; right:-70px; width:260px; height:260px; border:1px solid rgba(255,255,255,.2); border-radius:50%; content:""; }.eyebrow { position:relative; z-index:1; display:flex; align-items:center; gap:5px; margin:0 0 9px; color:#e7e4ff; font-size:.68rem; font-weight:700; letter-spacing:.09em; }.hero-main h2,.hero-main p,.hero-stats { position:relative; z-index:1; }.hero-main h2 { max-width:32ch; margin:0 0 8px; font-size:clamp(1.2rem,2vw,1.6rem); letter-spacing:-.035em; }.hero-main p { max-width:57ch; margin:0; color:#dfdcff; font-size:.8rem; line-height:1.55; }.hero-stats { display:flex; gap:24px; margin-top:22px; }.hero-stats b { display:block; font-size:1.12rem; }.hero-stats span { color:#dfdcff; font-size:.65rem; }.connect-card { padding:19px; }.connect-state { display:flex; align-items:center; gap:10px; padding:12px; margin:14px 0; border-radius:10px; background:#f4f3ff; }.connect-state .state-icon { width:32px; height:32px; display:grid; place-items:center; border-radius:9px; color:var(--purple); background:#e9e6ff; }.connect-state b { display:block; font-size:.74rem; }.connect-state small { color:var(--muted); font-size:.65rem; }.connect-help { margin:13px 0 0; color:var(--muted); font-size:.66rem; line-height:1.45; }
+    .node-picker { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; margin-bottom:17px; border:1px solid #e5e3ff; border-radius:12px; background:linear-gradient(100deg,#faf9ff,#f4f8ff); }.node-picker label { color:var(--muted); font-size:.68rem; font-weight:700; letter-spacing:.05em; }.node-picker select { min-width:190px; padding:8px 10px; color:var(--ink); border:1px solid #dedff0; border-radius:8px; outline:0; background:#fff; font-size:.74rem; }.metrics { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; margin-bottom:18px; }.metric { position:relative; min-width:0; overflow:hidden; padding:16px; }.metric::after { position:absolute; right:-20px; bottom:-33px; width:95px; height:95px; border-radius:50%; content:""; opacity:.55; }.metric.purple::after{background:#e1dcff}.metric.blue::after{background:#d7efff}.metric.orange::after{background:#ffe6c9}.metric.pink::after{background:#ffdce9}.metric.green::after{background:#d7f8ea}.metric-top { display:flex; align-items:center; justify-content:space-between; gap:7px; color:var(--muted); font-size:.69rem; font-weight:700; }.metric-symbol { width:27px; height:27px; display:grid; place-items:center; border-radius:8px; }.purple .metric-symbol{color:#6356e8;background:#efedff}.blue .metric-symbol{color:#2689e7;background:#e8f5ff}.orange .metric-symbol{color:#da7a18;background:#fff2e2}.pink .metric-symbol{color:#db3f83;background:#ffedf4}.green .metric-symbol{color:#0a956e;background:#e4faf2}.metric-value { min-height:30px; margin:11px 0 4px; font-family:"Space Grotesk"; font-size:clamp(1.13rem,2vw,1.5rem); font-weight:700; letter-spacing:-.04em; }.metric small { position:relative; z-index:1; color:var(--muted); font-size:.64rem; }.metric .limit { color:#947447; }
+    .grid-main { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(280px,.84fr); gap:18px; margin-bottom:18px; }.chart-card,.activity-card,.network-card,.settings-card { padding:19px; }.chart-toolbar { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:4px; padding:3px; border-radius:8px; background:#f2f3fa; }.chart-toolbar button { padding:5px 8px; color:var(--muted); border:0; border-radius:6px; background:transparent; font-size:.62rem; font-weight:700; }.chart-toolbar button.active { color:var(--purple); background:#fff; box-shadow:0 2px 5px rgba(34,38,73,.1); }.chart-key { display:flex; flex-wrap:wrap; gap:13px; margin-bottom:9px; color:var(--muted); font-size:.65rem; }.chart-key span { display:inline-flex; align-items:center; gap:5px; }.key { width:7px; height:7px; border-radius:50%; background:var(--purple); }.key.limit { width:12px; height:0; border-top:2px dashed var(--orange); border-radius:0; }.key.forecast { background:var(--pink); } canvas { display:block; width:100%; height:250px; }.activity-list { max-height:290px; overflow:auto; }.activity { display:grid; grid-template-columns:64px 1fr; gap:9px; padding:10px 0; border-top:1px solid var(--line); font-size:.69rem; }.activity:first-child { border-top:0; padding-top:1px; }.activity time { color:var(--muted); font-size:.63rem; }.activity p { margin:0; line-height:1.4; }.activity .bad { color:#c24254; }.activity .good { color:#07825e; }
+    .bottom-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:18px; }.network-table { width:100%; border-collapse:collapse; font-size:.69rem; }.network-table th { padding:0 0 9px; color:var(--muted); text-align:left; font-size:.61rem; letter-spacing:.04em; }.network-table td { padding:11px 0; border-top:1px solid var(--line); }.network-table td:last-child,.network-table th:last-child { text-align:right; }.network-table b { display:block; font-size:.71rem; }.network-table small { color:var(--muted); font-size:.62rem; }.status-pill { display:inline-block; padding:4px 6px; border-radius:6px; font-size:.59rem; font-weight:700; }.status-pill.live { color:#087d5d; background:#dff9ef; }.status-pill.stale { color:#a76305; background:#fff1d6; }.status-pill.offline { color:#c23f54; background:#ffe1e8; }.empty { padding:17px 4px; color:var(--muted); font-size:.7rem; line-height:1.5; }
+    .settings-card { padding:24px; }.settings-grid { display:grid; grid-template-columns:1.05fr 1fr; gap:16px; }.setting-section { padding:17px; border:1px solid var(--line); border-radius:13px; background:#fbfcff; }.setting-section h3 { margin:0 0 4px; }.setting-section .subtle { margin-bottom:15px; }.fields { display:grid; gap:12px; }.field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.field label { display:block; margin-bottom:6px; color:var(--muted); font-size:.63rem; font-weight:700; letter-spacing:.05em; }.field input,.field select { width:100%; padding:9px 10px; color:var(--ink); border:1px solid #e0e3f1; border-radius:8px; outline:0; background:#fff; font-size:.72rem; }.field input:focus,.field select:focus { border-color:#968ef1; box-shadow:0 0 0 3px #eeedff; }.setting-note { padding:11px; color:#5c5685; border-radius:9px; background:#f1efff; font-size:.67rem; line-height:1.45; }.setting-note code { display:block; margin-top:8px; padding:8px; overflow:auto; color:#3d3a59; border-radius:6px; background:#fff; font:10px/1.45 ui-monospace,monospace; white-space:pre; }.settings-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:17px; }.settings-message { min-height:1.2em; margin:13px 0 0; color:var(--green); font-size:.7rem; font-weight:700; }
+    @media(max-width:1100px){.app{grid-template-columns:82px 1fr}.sidebar{padding:26px 12px}.brand{justify-content:center;padding:0 0 32px}.brand-copy,.menu-label,.nav .text,.side-status{display:none}.nav button{justify-content:center;padding:12px}.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}} @media(max-width:760px){.app{display:block}.sidebar{position:static;width:100%;height:auto;padding:13px 14px;display:flex;align-items:center;justify-content:space-between}.brand{padding:0}.nav{display:flex;gap:3px}.nav button{width:auto;padding:9px}.topbar{align-items:flex-start;flex-direction:column}.hero,.grid-main,.bottom-grid,.settings-grid{grid-template-columns:1fr}.top-actions{width:100%}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.node-picker{align-items:stretch;flex-direction:column}.node-picker select{width:100%}.field-row{grid-template-columns:1fr}main{padding:20px 14px 32px}.network-table th:nth-child(3),.network-table td:nth-child(3){display:none}} @media(max-width:420px){.metrics{grid-template-columns:1fr}.tabs{display:flex;width:100%}.tabs button{flex:1;padding:8px 4px}.top-actions .btn{display:none}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">⌁</span><span class="brand-copy"><strong>SUBSENSE</strong><small>REAL-TIME MONITOR</small></span></div>
+      <p class="menu-label">WORKSPACE</p>
+      <nav class="nav" aria-label="Dashboard navigation">
+        <button class="active" data-view="overview"><span class="icon">▦</span><span class="text">Overview</span></button>
+        <button data-view="history"><span class="icon">◷</span><span class="text">Previous data</span></button>
+        <button data-view="forecast"><span class="icon">↗</span><span class="text">Future data</span></button>
+        <button data-view="settings"><span class="icon">⚙</span><span class="text">Settings</span></button>
+      </nav>
+      <div class="side-status"><small>GATEWAY STATUS</small><b><span class="dot " id="sideDot"></span><span id="sideConnection">Not connected</span></b><small id="sideInfo">Configure a gateway in Settings</small></div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><p class="breadcrumb">West Ridge Site / <span id="pageLabel">Overview</span></p><h1 id="pageTitle">Real-time sensor monitor</h1></div>
+        <div class="top-actions"><span class="gateway-badge"><span class="dot " id="topDot"></span><span id="gatewayStatus">Gateway offline</span></span><button class="btn" id="openSettings">⚙ Connection settings</button><button class="btn-primary" id="connectButton">Connect gateway</button></div>
+      </header>
+
+      <div class="tabs" aria-label="Data view"><button class="active" data-view="overview">Live data</button><button data-view="history">Previous data</button><button data-view="forecast">Future data</button></div>
+
+      <section class="settings-card card hidden" id="settingsPanel">
+        <div class="card-title"><div><h2>Gateway &amp; data settings</h2><p class="subtle">A gateway handles any number of field nodes. This dashboard never generates readings itself.</p></div><button class="btn" id="backToDashboard">← Back to dashboard</button></div>
+        <div class="settings-grid">
+          <section class="setting-section">
+            <h3>Connect the gateway</h3><p class="subtle">Choose the path through which real packets reach this browser.</p>
+            <div class="fields">
+              <div class="field"><label for="transport">TRANSPORT</label><select id="transport"><option value="ws">WebSocket gateway (recommended for LoRa / Wi-Fi)</option><option value="serial">USB serial gateway (Chrome or Edge)</option></select></div>
+              <div class="field" id="wsField"><label for="wsUrl">WEBSOCKET URL</label><input id="wsUrl" type="url" value="ws://localhost:8080/ws" spellcheck="false"></div>
+              <div class="field-row" id="serialFields"><div class="field"><label for="baudRate">SERIAL BAUD RATE</label><select id="baudRate"><option value="115200">115200</option><option value="9600">9600</option><option value="57600">57600</option></select></div><div class="field"><label for="gatewayName">GATEWAY NAME</label><input id="gatewayName" value="West-Ridge-GW-01"></div></div>
+              <div class="inline-actions"><button class="btn-primary" id="settingsConnect">Connect gateway</button><button class="btn btn-danger" id="disconnectButton">Disconnect</button></div>
+            </div>
+          </section>
+          <section class="setting-section">
+            <h3>Required live packet</h3><p class="subtle">Send one JSON object per WebSocket message or one JSON object per line over USB serial. Every node must have a unique <code>node_id</code>.</p>
+            <div class="setting-note">Values are displayed exactly as received in the specified units. Calibrate each physical sensor before sending data to keep readings accurate.<code>{
+  "node_id":"N-01",
+  "timestamp":"2026-09-23T10:30:00Z",
+  "tilt_deg":1.24,
+  "piezometer_kpa":68.4,
+  "displacement_mm":6.8,
+  "crack_width_mm":1.62,
+  "vibration_g":0.42,
+  "rssi_dbm":-61,
+  "battery_pct":93
+}</code></div>
+          </section>
+        </div>
+        <div class="settings-actions"><button class="btn" id="requestHistory">Request selected-node history</button><button class="btn" id="requestForecast">Request selected-node forecast</button></div>
+        <p class="settings-message" id="settingsMessage" aria-live="polite"></p>
+      </section>
+
+      <div id="dashboardContent">
+        <section class="hero">
+          <article class="hero-main"><p class="eyebrow"><span class="dot " id="heroDot"></span><span id="heroLabel">WAITING FOR GATEWAY</span></p><h2 id="heroTitle">Connect a gateway to begin receiving real sensor readings.</h2><p id="heroCopy">No generated values are shown. Once a calibrated node packet arrives, its readings and history will appear automatically.</p><div class="hero-stats"><div><b id="nodeCount">0</b><span>Nodes reporting</span></div><div><b id="packetCount">0</b><span>Packets received</span></div><div><b id="lastPacket">—</b><span>Last packet</span></div></div></article>
+          <article class="connect-card card"><div class="card-title"><div><h3>Gateway connection</h3><p class="subtle">One gateway can relay unlimited nodes</p></div></div><div class="connect-state"><span class="state-icon">⌁</span><span><b id="connectionTitle">No live connection</b><small id="connectionDetail">Use Settings to configure USB serial or WebSocket.</small></span></div><div class="inline-actions"><button class="btn-primary" id="quickConnect">Connect now</button><button class="btn" id="clearData">Clear local display</button></div><p class="connect-help">For LoRa or Wi-Fi nodes, connect the gateway to a server that broadcasts the real packets over WebSocket.</p></article>
+        </section>
+
+        <div class="node-picker"><label for="nodePicker">VIEW REAL READINGS FROM</label><select id="nodePicker" disabled=""><option value="">Waiting for a live node…</option></select></div>
+
+        <section class="metrics" aria-label="Selected node sensor readings">
+          <article class="metric card purple"><div class="metric-top"><span>Tilt sensor</span><span class="metric-symbol">⌁</span></div><div class="metric-value" id="tiltValue">—</div><small><span class="limit">Action limit: 8.00°</span></small></article>
+          <article class="metric card blue"><div class="metric-top"><span>Piezometer</span><span class="metric-symbol">≈</span></div><div class="metric-value" id="piezometerValue">—</div><small><span class="limit">Action limit: 150.0 kPa</span></small></article>
+          <article class="metric card orange"><div class="metric-top"><span>Displacement</span><span class="metric-symbol">↔</span></div><div class="metric-value" id="displacementValue">—</div><small><span class="limit">Action limit: 30.0 mm</span></small></article>
+          <article class="metric card pink"><div class="metric-top"><span>Crack sensor</span><span class="metric-symbol">⌇</span></div><div class="metric-value" id="crackValue">—</div><small><span class="limit">Action limit: 5.00 mm</span></small></article>
+          <article class="metric card green"><div class="metric-top"><span>Vibration sensor</span><span class="metric-symbol">⌁</span></div><div class="metric-value" id="vibrationValue">—</div><small><span class="limit">Action limit: 2.00 g</span></small></article>
+        </section>
+
+        <section class="grid-main">
+          <article class="chart-card card"><div class="card-title"><div><h3 id="chartTitle">Sensor readings trend</h3><p class="subtle" id="chartSubtitle">Real packets only — select a node once data arrives</p></div><div class="chart-toolbar"><button class="active" data-metric="tilt">Tilt</button><button data-metric="piezometer">Piezometer</button><button data-metric="displacement">Displacement</button><button data-metric="crack">Crack</button><button data-metric="vibration">Vibration</button></div></div><div class="chart-key"><span><i class="key"></i>Measured readings</span><span id="forecastKey"><i class="key forecast"></i>Server forecast</span><span><i class="key limit"></i>Action limit</span></div><canvas id="chart" aria-label="Sensor reading trend" width="862" height="312"></canvas></article>
+          <article class="activity-card card"><div class="card-title"><div><h3>Live activity</h3><p class="subtle">Connection and data events</p></div><button class="btn" id="clearLog">Clear</button></div><div class="activity-list" id="activity"><div class="empty">No events yet. Connect a gateway to receive real packets.</div></div></article>
+        </section>
+
+        <section class="bottom-grid">
+          <article class="network-card card"><div class="card-title"><div><h3>Node network</h3><p class="subtle">Nodes appear automatically from their live <code>node_id</code>.</p></div><button class="btn" id="refreshNetwork">Refresh</button></div><table class="network-table"><thead><tr><th>NODE</th><th>LAST READING</th><th>LINK</th><th>STATUS</th><th></th></tr></thead><tbody id="nodeTable"><tr><td colspan="5" class="empty">No live nodes have been received.</td></tr></tbody></table></article>
+          <article class="activity-card card"><div class="card-title"><div><h3 id="viewInfoTitle">Live data information</h3><p class="subtle" id="viewInfoText">All values are measurements received from your gateway.</p></div></div><div id="viewInfo" class="empty">Connect a gateway, then select a node to see its readings.</div></article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const SENSOR = {
+      tilt: { label:"Tilt sensor", unit:"°", precision:2, limit:8, color:"#6259e8", keys:["tilt_deg","tilt"] },
+      piezometer: { label:"Piezometer", unit:" kPa", precision:1, limit:150, color:"#359cff", keys:["piezometer_kpa","pressure_kpa","pore_pressure_kpa"] },
+      displacement: { label:"Displacement", unit:" mm", precision:1, limit:30, color:"#f49b43", keys:["displacement_mm","disp_mm"] },
+      crack: { label:"Crack sensor", unit:" mm", precision:2, limit:5, color:"#f55b9b", keys:["crack_width_mm","crack_mm"] },
+      vibration: { label:"Vibration sensor", unit:" g", precision:2, limit:2, color:"#16b787", keys:["vibration_g","vib_g"] }
+    };
+    const state = { nodes:new Map(), selectedNodeId:"", metric:"tilt", view:"overview", socket:null, serialPort:null, serialReader:null, connected:false, transport:"ws", packets:0, log:[] };
+    const $ = id => document.getElementById(id);
+    const fmt = (value, precision) => Number.isFinite(value) ? Number(value).toFixed(precision) : "—";
+    const now = () => new Date().toLocaleTimeString([], { hour:"2-digit", minute:"2-digit", second:"2-digit" });
+
+    function newNode(id) {
+      const history = {}; const forecast = {}; Object.keys(SENSOR).forEach(key => { history[key] = []; forecast[key] = []; });
+      return { id, name:id, values:{}, history, forecast, rssi:null, battery:null, lastSeen:null, source:"", connected:true };
+    }
+    function getSelectedNode() { return state.nodes.get(state.selectedNodeId); }
+    function nodeState(node) { if (!node || !node.lastSeen) return "offline"; return Date.now() - node.lastSeen.getTime() < 120000 ? "live" : "stale"; }
+    function addLog(text, kind="") { state.log.unshift({ time:now(), text, kind }); state.log = state.log.slice(0,80); renderLog(); }
+    function renderLog() { $("activity").innerHTML = state.log.length ? state.log.map(item => `<div class="activity"><time>${item.time}</time><p class="${item.kind}">${item.text}</p></div>`).join("") : `<div class="empty">No events yet. Connect a gateway to receive real packets.</div>`; }
+    function setGatewayState(connected, detail="") {
+      state.connected = connected;
+      [$("topDot"),$("sideDot"),$("heroDot")].forEach(dot => dot.className = `dot ${connected ? "live" : ""}`);
+      $("gatewayStatus").textContent = connected ? "Gateway connected" : "Gateway offline";
+      $("sideConnection").textContent = connected ? "Gateway connected" : "Not connected";
+      $("sideInfo").textContent = detail || (connected ? "Listening for real packets" : "Configure a gateway in Settings");
+      $("connectionTitle").textContent = connected ? "Gateway connection live" : "No live connection";
+      $("connectionDetail").textContent = detail || (connected ? "Listening for packets from any node." : "Use Settings to configure USB serial or WebSocket.");
+      $("heroLabel").textContent = connected ? "LIVE GATEWAY CONNECTED" : "WAITING FOR GATEWAY";
+      $("heroTitle").textContent = connected ? "Listening for calibrated readings from your field nodes." : "Connect a gateway to begin receiving real sensor readings.";
+      $("heroCopy").textContent = connected ? "Nodes will be added automatically when their first valid packet arrives. No simulated values are generated." : "No generated values are shown. Once a calibrated node packet arrives, its readings and history will appear automatically.";
+      $("connectButton").textContent = connected ? "Gateway connected" : "Connect gateway";
+      $("settingsConnect").textContent = connected ? "Gateway connected" : "Connect gateway";
+    }
+    function renderPicker() {
+      const picker = $("nodePicker"), previous = state.selectedNodeId; picker.innerHTML = "";
+      if (!state.nodes.size) { picker.disabled = true; picker.add(new Option("Waiting for a live node…", "")); return; }
+      picker.disabled = false; [...state.nodes.values()].sort((a,b) => a.id.localeCompare(b.id)).forEach(node => picker.add(new Option(`${node.id}${node.name !== node.id ? " · " + node.name : ""}`, node.id)));
+      if (state.nodes.has(previous)) picker.value = previous; else { state.selectedNodeId = [...state.nodes.keys()][0]; picker.value = state.selectedNodeId; }
+    }
+    function renderMetrics() {
+      const node = getSelectedNode();
+      Object.keys(SENSOR).forEach(key => $(key === "piezometer" ? "piezometerValue" : `${key}Value`).textContent = node ? `${fmt(node.values[key], SENSOR[key].precision)}${Number.isFinite(node.values[key]) ? SENSOR[key].unit : ""}` : "—");
+      $("chartSubtitle").textContent = node ? `Real readings received from ${node.id}. No data is fabricated.` : "Real packets only — select a node once data arrives";
+    }
+    function renderNetwork() {
+      const rows = [...state.nodes.values()].sort((a,b) => a.id.localeCompare(b.id));
+      $("nodeTable").innerHTML = rows.length ? rows.map(node => { const status = nodeState(node); const seen = node.lastSeen ? node.lastSeen.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"}) : "—"; return `<tr><td><b>${node.id}</b><small>${node.name !== node.id ? node.name : "Field node"}</small></td><td><b>${seen}</b><small>${node.lastSeen ? "packet received" : "waiting"}</small></td><td><b>${Number.isFinite(node.rssi) ? node.rssi + " dBm" : "—"}</b><small>${Number.isFinite(node.battery) ? "Battery " + node.battery + "%" : "No link details"}</small></td><td><span class="status-pill ${status}">${status.toUpperCase()}</span></td><td><button class="btn" data-select-node="${node.id}">View</button></td></tr>`; }).join("") : `<tr><td colspan="5" class="empty">No live nodes have been received.</td></tr>`;
+      const live = rows.filter(node => nodeState(node) === "live").length; $("nodeCount").textContent = live; $("packetCount").textContent = state.packets; $("lastPacket").textContent = rows.some(node => node.lastSeen) ? now() : "—";
+    }
+    function renderViewInfo() {
+      const node = getSelectedNode(); const metric = SENSOR[state.metric];
+      const map = { overview:["Live data information", "All values are measurements received from your gateway."], history:["Previous data", "Showing recorded packets retained in this browser. A WebSocket gateway can send a longer history on request."], forecast:["Future data", "Forecasts are shown only when your server sends model output; this dashboard does not invent forecasts."] };
+      $("viewInfoTitle").textContent = map[state.view][0]; $("viewInfoText").textContent = map[state.view][1];
+      if (!node) { $("viewInfo").textContent = "Connect a gateway, then select a node to see its readings."; return; }
+      const readings = node.history[state.metric].length; const forecast = node.forecast[state.metric].length;
+      $("viewInfo").innerHTML = `<b>${node.id} · ${metric.label}</b><br><br>${readings} recorded reading${readings === 1 ? "" : "s"} currently held for this sensor.${state.view === "forecast" ? `<br><br>${forecast ? forecast + " forecast point" + (forecast === 1 ? " is" : "s are") + " available from the server." : "No server forecast has been received yet."}` : ""}`;
+    }
+    function drawChart() {
+      const canvas = $("chart"), rect = canvas.getBoundingClientRect(), ratio = window.devicePixelRatio || 1, ctx = canvas.getContext("2d"); canvas.width = Math.max(1,rect.width*ratio); canvas.height = Math.max(1,rect.height*ratio); ctx.setTransform(ratio,0,0,ratio,0,0);
+      const w=rect.width,h=rect.height,p={top:18,right:18,bottom:28,left:43},pw=w-p.left-p.right,ph=h-p.top-p.bottom,node=getSelectedNode(),sensor=SENSOR[state.metric]; ctx.clearRect(0,0,w,h);
+      if (!node || !node.history[state.metric].length) { ctx.fillStyle="#7b87a3"; ctx.font="13px DM Sans, sans-serif"; ctx.textAlign="center"; ctx.fillText(node ? `Waiting for ${sensor.label.toLowerCase()} packets from ${node.id}` : "Waiting for a real node packet", w/2, h/2); ctx.textAlign="left"; return; }
+      const actual = node.history[state.metric]; const predicted = state.view === "forecast" ? node.forecast[state.metric] : []; const values=[...actual.map(item=>item.value),...predicted.map(item=>item.value),sensor.limit]; const min=Math.max(0,Math.min(...values)*.75), max=Math.max(...values,sensor.limit)*1.12, range=max-min||1; const y=v=>p.top+(max-v)/range*ph; const x=i=>p.left+i/Math.max(1,actual.length+predicted.length-1)*pw;
+      ctx.font="10px DM Sans, sans-serif"; for(let i=0;i<4;i++){const yy=p.top+i*ph/3;ctx.strokeStyle="#eceef7";ctx.beginPath();ctx.moveTo(p.left,yy);ctx.lineTo(w-p.right,yy);ctx.stroke();ctx.fillStyle="#8490aa";ctx.fillText(fmt(max-i*range/3,sensor.precision),3,yy+3);}
+      ctx.setLineDash([5,5]);ctx.strokeStyle="#f49b43";ctx.beginPath();ctx.moveTo(p.left,y(sensor.limit));ctx.lineTo(w-p.right,y(sensor.limit));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#cc791e";ctx.fillText("action limit",w-p.right-57,Math.max(12,y(sensor.limit)-5));
+      if(actual.length>1){const gradient=ctx.createLinearGradient(0,p.top,0,p.top+ph);gradient.addColorStop(0,sensor.color+"42");gradient.addColorStop(1,sensor.color+"02");ctx.beginPath();actual.forEach((item,i)=>i?ctx.lineTo(x(i),y(item.value)):ctx.moveTo(x(i),y(item.value)));ctx.lineTo(x(actual.length-1),p.top+ph);ctx.lineTo(x(0),p.top+ph);ctx.closePath();ctx.fillStyle=gradient;ctx.fill();}
+      ctx.beginPath();actual.forEach((item,i)=>i?ctx.lineTo(x(i),y(item.value)):ctx.moveTo(x(i),y(item.value)));ctx.strokeStyle=sensor.color;ctx.lineWidth=2.6;ctx.stroke();
+      if(predicted.length){ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(x(actual.length-1),y(actual.at(-1).value));predicted.forEach((item,i)=>ctx.lineTo(x(actual.length+i),y(item.value)));ctx.strokeStyle="#f55b9b";ctx.lineWidth=2.3;ctx.stroke();ctx.setLineDash([]);}
+      const ticks=["Oldest","", "", "Latest"]; ticks.forEach((label,i)=>{ctx.fillStyle="#8490aa";ctx.fillText(label,p.left+i/3*pw-8,h-8);});
+    }
+    function renderAll() { renderPicker(); renderMetrics(); renderNetwork(); renderViewInfo(); drawChart(); }
+
+    function valueFrom(packet, keys) { for (const key of keys) { const value = Number(packet[key]); if (Number.isFinite(value)) return value; } return null; }
+    function ingestPacket(packet, source="gateway", quiet=false) {
+      if (Array.isArray(packet)) { packet.forEach(item => ingestPacket(item,source,quiet)); return; }
+      if (!packet || typeof packet !== "object") return;
+      if (packet.type === "history" && Array.isArray(packet.readings)) { ingestPacket(packet.readings,source,true); addLog(`History received for ${packet.node_id || "selected node"}.`,"good"); return; }
+      const nodeId = String(packet.node_id ?? packet.nodeId ?? packet.device_id ?? packet.id ?? "").trim();
+      if (!nodeId) { if (!quiet) addLog("Ignored a packet without node_id.","bad"); return; }
+      const node = state.nodes.get(nodeId) || newNode(nodeId); const timestamp = new Date(packet.timestamp || packet.time || Date.now()); let recorded=false;
+      Object.entries(SENSOR).forEach(([key,sensor]) => { const value=valueFrom(packet,sensor.keys); if(value===null)return; node.values[key]=value; node.history[key].push({value,time:timestamp}); if(node.history[key].length>600)node.history[key].shift(); recorded=true; });
+      if (!recorded) { if (!quiet) addLog(`Ignored ${nodeId}: no recognised sensor fields.`,"bad"); return; }
+      node.name=String(packet.node_name ?? packet.name ?? node.name); node.rssi=valueFrom(packet,["rssi_dbm","rssi"]); node.battery=valueFrom(packet,["battery_pct","battery"]); node.lastSeen=timestamp; node.source=source; node.connected=true; state.nodes.set(nodeId,node); if(!state.selectedNodeId)state.selectedNodeId=nodeId; state.packets++; if(!quiet)addLog(`${nodeId} sent a real reading packet via ${source}.`,"good"); renderAll();
+    }
+    function ingestForecast(packet) {
+      const nodeId=String(packet.node_id ?? packet.nodeId ?? "").trim(), node=state.nodes.get(nodeId); if(!node||!packet.forecast)return; Object.entries(SENSOR).forEach(([key,sensor])=>{const entries=packet.forecast[key]||packet.forecast[sensor.keys[0]];if(!Array.isArray(entries))return;node.forecast[key]=entries.map(item=>typeof item==="number"?{value:item,time:new Date()}: {value:Number(item.value),time:new Date(item.timestamp||Date.now())}).filter(item=>Number.isFinite(item.value));}); addLog(`Forecast received for ${nodeId}.`,"good");renderAll();
+    }
+    function handleRaw(raw, source) { try { const packet=typeof raw==="string"?JSON.parse(raw):raw; if(packet.type==="forecast")ingestForecast(packet); else ingestPacket(packet,source); } catch { addLog("Ignored an invalid JSON packet from the gateway.","bad"); } }
+    function sendCommand(command) { if(state.socket?.readyState===WebSocket.OPEN){state.socket.send(JSON.stringify(command));return true;} addLog("Gateway commands need an active WebSocket connection.","bad");return false; }
+    async function connectGateway() {
+      if(state.connected)return; state.transport=$("transport").value; $("settingsMessage").textContent="";
+      if(state.transport==="ws"){
+        const url=$("wsUrl").value.trim(); if(!/^wss?:\/\//i.test(url)){ $("settingsMessage").textContent="Enter a valid ws:// or wss:// gateway URL."; return; }
+        try { const socket=new WebSocket(url); state.socket=socket; $("settingsMessage").textContent="Connecting to WebSocket gateway…"; socket.onopen=()=>{setGatewayState(true,`WebSocket: ${url}`);addLog("WebSocket gateway connected.","good");$("settingsMessage").textContent="Gateway connected. Waiting for live node packets.";}; socket.onmessage=event=>handleRaw(event.data,"WebSocket"); socket.onerror=()=>{addLog("WebSocket connection error. Check the gateway URL.","bad");}; socket.onclose=()=>{if(state.socket===socket){state.socket=null;setGatewayState(false);addLog("WebSocket gateway disconnected.","bad");}}; } catch(error){$("settingsMessage").textContent=`Connection failed: ${error.message}`;}
+      } else {
+        if(!("serial" in navigator)){ $("settingsMessage").textContent="Web Serial is available in Chrome or Edge over HTTPS or a local file."; return; }
+        try { state.serialPort=await navigator.serial.requestPort(); await state.serialPort.open({baudRate:Number($("baudRate").value)}); setGatewayState(true,"USB serial gateway connected");addLog("USB serial gateway connected.","good");$("settingsMessage").textContent="Gateway connected. Waiting for newline-delimited JSON packets."; const reader=state.serialPort.readable.pipeThrough(new TextDecoderStream()).getReader();state.serialReader=reader;let buffer="";while(state.serialPort){const {value,done}=await reader.read();if(done)break;buffer+=value;let end;while((end=buffer.indexOf("\n"))>=0){const line=buffer.slice(0,end).trim();buffer=buffer.slice(end+1);if(line)handleRaw(line,"USB serial");}} } catch(error){state.serialPort=null;setGatewayState(false);$("settingsMessage").textContent=`Serial connection failed: ${error.message}`;addLog("USB serial connection failed.","bad");}
+      }
+    }
+    async function disconnectGateway() { if(state.socket){state.socket.close();state.socket=null;} if(state.serialReader){try{await state.serialReader.cancel();}catch{}state.serialReader=null;}if(state.serialPort){try{await state.serialPort.close();}catch{}state.serialPort=null;}setGatewayState(false);addLog("Gateway disconnected.");$("settingsMessage").textContent="Gateway disconnected."; }
+    function setView(view) { state.view=view; document.querySelectorAll("[data-view]").forEach(btn=>btn.classList.toggle("active",btn.dataset.view===view)); const settings=view==="settings";$("settingsPanel").classList.toggle("hidden",!settings);$("dashboardContent").classList.toggle("hidden",settings);const titles={overview:["Overview","Real-time sensor monitor"],history:["Previous data","Review recorded sensor readings"],forecast:["Future data","Server forecast monitor"],settings:["Settings","Gateway & data settings"]};$("pageLabel").textContent=titles[view][0];$("pageTitle").textContent=titles[view][1];if(view==="history")sendCommand({type:"history_request",node_id:state.selectedNodeId,metrics:Object.keys(SENSOR)});if(view==="forecast")sendCommand({type:"forecast_request",node_id:state.selectedNodeId,metrics:Object.keys(SENSOR)});renderViewInfo();drawChart(); }
+
+    document.querySelectorAll("[data-view]").forEach(button=>button.addEventListener("click",()=>setView(button.dataset.view)));
+    document.querySelectorAll("[data-metric]").forEach(button=>button.addEventListener("click",()=>{state.metric=button.dataset.metric;document.querySelectorAll("[data-metric]").forEach(item=>item.classList.toggle("active",item===button));$("chartTitle").textContent=`${SENSOR[state.metric].label} trend`;renderViewInfo();drawChart();}));
+    $("nodePicker").addEventListener("change",event=>{state.selectedNodeId=event.target.value;renderMetrics();renderViewInfo();drawChart();});
+    $("connectButton").addEventListener("click",()=>{setView("settings");connectGateway();}); $("quickConnect").addEventListener("click",()=>{setView("settings");connectGateway();}); $("openSettings").addEventListener("click",()=>setView("settings")); $("settingsConnect").addEventListener("click",connectGateway); $("disconnectButton").addEventListener("click",disconnectGateway); $("backToDashboard").addEventListener("click",()=>setView("overview"));
+    $("transport").addEventListener("change",event=>{$("wsField").classList.toggle("hidden",event.target.value!=="ws");$("serialFields").classList.toggle("hidden",event.target.value!=="serial");});
+    $("clearData").addEventListener("click",()=>{state.nodes.clear();state.selectedNodeId="";state.packets=0;addLog("Local dashboard display cleared. Gateway connection stays active.");renderAll();}); $("clearLog").addEventListener("click",()=>{state.log=[];renderLog();}); $("refreshNetwork").addEventListener("click",renderAll);
+    $("nodeTable").addEventListener("click",event=>{const button=event.target.closest("[data-select-node]");if(!button)return;state.selectedNodeId=button.dataset.selectNode;renderPicker();renderMetrics();renderViewInfo();drawChart();}); $("requestHistory").addEventListener("click",()=>sendCommand({type:"history_request",node_id:state.selectedNodeId,metrics:Object.keys(SENSOR)})); $("requestForecast").addEventListener("click",()=>sendCommand({type:"forecast_request",node_id:state.selectedNodeId,metrics:Object.keys(SENSOR)})); window.addEventListener("resize",drawChart);
+    setGatewayState(false);renderAll();renderLog();
+  </script>
+
+
+</body></html>
